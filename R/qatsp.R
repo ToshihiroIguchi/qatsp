@@ -25,8 +25,6 @@ qatsp <- function(x = NULL, y = NULL,
     }
   }
 
-  print(city_distance)
-  print(max(city_distance))
 
   #spinの初期値を作成する。
   #次元はncity * ncity * torotter
@@ -95,8 +93,8 @@ qatsp <- function(x = NULL, y = NULL,
     b <- ab[2]
     tr <- round(runif(1) * (trotter -1 ) + 1.5)
 
-    p <- which(a == 1)
-    q <- which(b == 1)
+    p <- which(spin[a, , tr] == 1)
+    q <- which(spin[b, , tr] == 1)
     cost_c <- 0
 
     #古典的コスト
@@ -107,11 +105,11 @@ qatsp <- function(x = NULL, y = NULL,
       cost_c <- {
         cost_c
         + (
-          2 * (-lpj * spin[a, p, tr] - lqj * spin[a, q, tr])
+            2 * (-lpj * spin[a, p, tr] - lqj * spin[a, q, tr])
           * (spin[(a - 1), j, tr] + spin[a%%ncity + 1, j, tr])
-          + 2 * (-lpj * spin[b, p, tr] - lqj * spin[b, p, tr])
+          + 2 * (-lpj * spin[b, p, tr] - lqj * spin[b, q, tr])
           * (spin[(b - 1), j, tr] + spin[b%%ncity + 1, j, tr])
-        ) /trotter
+        )
       }
 
     }
@@ -125,26 +123,16 @@ qatsp <- function(x = NULL, y = NULL,
     cost_q <- cost_qr * (cost_q1 + cost_q2 + cost_q3 + cost_q4)
 
     #合計のコスト
-    cost <- cost_c + cost_q
+    cost <- cost_c/trotter + cost_q
 
     #flip
-    spin_old <- spin
     if(min(1, exp(-beta * cost)) > runif(1)){
-      #print("flip")
-      flip_spin <- spin[a, , tr]
-      #print(flip_spin)
-      spin[a, , tr] <- spin[b, , tr]
-      spin[b, , tr] <- flip_spin
-      #spin[a, p, tr] <- (-1) * spin[a, p, tr]
-      #spin[a, q, tr] <- (-1) * spin[a, q, tr]
-      #spin[b, p, tr] <- (-1) * spin[b, p, tr]
-      #spin[b, q, tr] <- (-1) * spin[b, q, tr]
-    }
-
-
-    #if(spin_old != spin){print("change")}else{print("not change")}
-
-
+      print("flip")
+      spin[a, p, tr] <- (spin[a, p, tr] * (-1))
+      spin[a, q, tr] <- (spin[a, q, tr] * (-1))
+      spin[b, p, tr] <- (spin[b, p, tr] * (-1))
+      spin[b, q, tr] <- (spin[b, q, tr] * (-1))
+    }else{print("not flip")}
 
     #戻り値
     return(spin)
@@ -152,6 +140,8 @@ qatsp <- function(x = NULL, y = NULL,
 
 
   #量子アニーリング(本体)
+
+  min_tsp <- NULL
 
   for(astep in 1:ann_step){
     for(mstep in 1:mc_step){
@@ -163,6 +153,10 @@ qatsp <- function(x = NULL, y = NULL,
 
     #print(spin)
     #print(eigen(spin[,,1])$values)
+
+    min_tsp <- c(min_tsp, min(spin_distance))
+    plot(min_tsp, type = "l")
+
     print(spin_distance)
     print(min(spin_distance))
 
