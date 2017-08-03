@@ -2,11 +2,12 @@
 #http://qiita.com/ab_t/items/8d52096ad0f578aa2224
 
 qatsp <- function(x = NULL, y = NULL,
+                  trace = TRUE,
                   beta  = 37,
                   trotter = 10,
                   ann_para = 1,
                   ann_step = 330,
-                  mc_step = 6600,
+                  mc_step = 6660,
                   reduc = 0.99){
 
   #初期チェック
@@ -88,13 +89,14 @@ qatsp <- function(x = NULL, y = NULL,
     max_distance <- max(city_distance)
     trotter <- length(spin[1, 1, ])
 
+    #a,b,p,q,trを決める。
     ab <- sample(c(2:ncity), size = 2)
     a <- ab[1]
     b <- ab[2]
     tr <- round(runif(1) * (trotter -1 ) + 1.5)
-
     p <- which(spin[a, , tr] == 1)
     q <- which(spin[b, , tr] == 1)
+
     cost_c <- 0
 
     #古典的コスト
@@ -102,16 +104,12 @@ qatsp <- function(x = NULL, y = NULL,
       lpj <- city_distance[p, j]/max_distance
       lqj <- city_distance[q, j]/max_distance
 
-      cost_c <- {
-        cost_c
-        + (
-            2 * (-lpj * spin[a, p, tr] - lqj * spin[a, q, tr])
-          * (spin[(a - 1), j, tr] + spin[a%%ncity + 1, j, tr])
-          + 2 * (-lpj * spin[b, p, tr] - lqj * spin[b, q, tr])
-          * (spin[(b - 1), j, tr] + spin[b%%ncity + 1, j, tr])
-        )
-      }
+      cost_c1 <- 2 * (-lpj * spin[a, p, tr] - lqj * spin[a, q, tr])
+      cost_c2 <- (spin[(a - 1), j, tr] + spin[a%%ncity + 1, j, tr])
+      cost_c3 <- 2 * (-lpj * spin[b, p, tr] - lqj * spin[b, q, tr])
+      cost_c4 <- (spin[(b - 1), j, tr] + spin[b%%ncity + 1, j, tr])
 
+      cost_c <- cost_c + (cost_c1 * cost_c2 + cost_c3 * cost_c4)
     }
 
     #量子的コスト
@@ -126,13 +124,12 @@ qatsp <- function(x = NULL, y = NULL,
     cost <- cost_c/trotter + cost_q
 
     #flip
-    if(min(1, exp(-beta * cost)) > runif(1)){
-      print("flip")
+    if(cost <= 0 || runif(1) < exp(-beta * cost)){
       spin[a, p, tr] <- (spin[a, p, tr] * (-1))
       spin[a, q, tr] <- (spin[a, q, tr] * (-1))
       spin[b, p, tr] <- (spin[b, p, tr] * (-1))
       spin[b, q, tr] <- (spin[b, q, tr] * (-1))
-    }else{print("not flip")}
+    }
 
     #戻り値
     return(spin)
@@ -140,8 +137,8 @@ qatsp <- function(x = NULL, y = NULL,
 
 
   #量子アニーリング(本体)
-
   min_tsp <- NULL
+  distance_tsp <- NULL
 
   for(astep in 1:ann_step){
     for(mstep in 1:mc_step){
@@ -151,18 +148,17 @@ qatsp <- function(x = NULL, y = NULL,
 
     spin_distance <- tr_all_distance(spin, city_distance)
 
-    #print(spin)
-    #print(eigen(spin[,,1])$values)
 
-    min_tsp <- c(min_tsp, min(spin_distance))
-    plot(min_tsp, type = "l")
+    distance_tsp <- c(distance_tsp, min(spin_distance))
+    min_tsp <- c(min_tsp, min(distance_tsp))
 
-    print(spin_distance)
-    print(min(spin_distance))
-
-    print(astep)
+    if(trace){
+      plot(distance_tsp, type = "l")
+    }
   }
 
+  #戻り値
+  ret <- list(distance = distance_tsp)
 
 
 }
@@ -174,6 +170,7 @@ data <- read.table("dj38.tsp",
                    skip = 10, sep = " ", header = FALSE)
 
 
+set.seed(108)
 test <- qatsp(x = data[,2], y= data[,3])
 
 
