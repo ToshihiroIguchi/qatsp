@@ -6,7 +6,7 @@ qatsp <- function(x = NULL, y = NULL,
                   beta  = 37,
                   trotter = 10,
                   ann_para = 1,
-                  ann_step = 330,
+                  ann_step = 33,
                   mc_step = 6660,
                   reduc = 0.99){
 
@@ -14,6 +14,7 @@ qatsp <- function(x = NULL, y = NULL,
   if(is.null(x) || is.null(y)){stop("Please enter the position in x and y.")}
   if(!length(x) == length(y)){stop("Make the vector length of x and y the same.")}
   ncity <- length(x)
+
 
   #2都市間の距離をmatrixに変換
   city_distance <- matrix(rep(0, times = ncity * ncity), ncol = ncity)
@@ -137,8 +138,14 @@ qatsp <- function(x = NULL, y = NULL,
 
 
   #量子アニーリング(本体)
-  min_tsp <- NULL
   distance_tsp <- NULL
+
+  best_distance <- Inf
+  best_tsp <- NULL
+  best_spin <- NULL
+  best_astep <- NULL
+
+  plot_matrix <- NULL
 
   for(astep in 1:ann_step){
     for(mstep in 1:mc_step){
@@ -146,22 +153,76 @@ qatsp <- function(x = NULL, y = NULL,
     }
     ann_para <- ann_para * reduc
 
+    #各アニールステップごとに距離計算
     spin_distance <- tr_all_distance(spin, city_distance)
+    min_spin_distance <- min(spin_distance)
+    distance_tsp <- c(distance_tsp, min_spin_distance)
 
 
-    distance_tsp <- c(distance_tsp, min(spin_distance))
-    min_tsp <- c(min_tsp, min(distance_tsp))
+    #もし、最小値があった場合、spinを保存
+    if(min_spin_distance < best_distance){
+      best_distance <- min_spin_distance
+      best_tr <- which(spin_distance == min_spin_distance)
+      best_spin <- spin[, , best_tr]
+      best_astep <- astep
+    }
 
+    #現時点での最良値
+    best_tsp <- c(best_tsp, best_distance)
+
+    #経過表示
     if(trace){
-      plot(distance_tsp, type = "l")
+      plot_matrix <- rbind(plot_matrix, matrix(c(min_spin_distance, best_distance), 1 , 2))
+      matplot(c(1:astep), plot_matrix, type = "l",
+              xlab = "Annealing step", ylab = "Total distance")
     }
   }
 
   #戻り値
-  ret <- list(distance = distance_tsp)
+  ret <- list()
+
+  ret$distance <- distance_tsp
+  ret$best$tsp <- best_tsp
+  ret$best$spin <- best_spin
+  ret$best$astep <- best_astep
+
+  ret$para$beta <- beta
+  ret$para$trotter <- trotter
+  ret$para$ann_para <- ann_para
+  ret$para$ann_step <- ann_step
+  ret$para$mc_step <- mc_step
+  ret$para$reduc <- reduc
+
+  ret$city_distance <- city_distance
+
+  class(ret) <- "qatsp"
+
+  return(ret)
+}
+
+#アニーリングステップと総距離の推移グラフ
+plot.qatsp <- function(result){
+  min_distance_tsp <- result$distance
+  for(a in 2:length(result$distance)){
+    if(min_distance_tsp[a] > min_distance_tsp[a - 1]){
+      min_distance_tsp[a] <- min_distance_tsp[a - 1]
+    }
+  }
+
+  plot_matrix <- matrix(c(result$distance, min_distance_tsp),result$para$ann_step, 2)
+  matplot(c(1:result$para$ann_step), plot_matrix, type = "l",
+          xlab = "Annealing step", ylab = "Total distance")
+}
+
+
+summary.qatsp <- function(result){
+
 
 
 }
+
+
+
 
 
 #データを開く
