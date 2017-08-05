@@ -109,15 +109,11 @@ qatsp <- function(x = NULL, y = NULL,
     q <- which(spin[b, , tr] == 1)
 
     #古典的コスト
-    cost_c <- 0
-    for(j in 1:ncity){
-      lpj <- city_distance[p, j]
-      lqj <- city_distance[q, j]
-      cost_c1 <- (spin[(a - 1), j, tr] + spin[ab_p1[a], j, tr])
-      cost_c2 <- (spin[(b - 1), j, tr] + spin[ab_p1[b], j, tr])
-      cost_c <- cost_c + 2*(-lpj + lqj)*(cost_c1 - cost_c2)
-    }
-    cost_c <- cost_c / max_distance
+    lpj <- city_distance[p, ]
+    lqj <- city_distance[q, ]
+    cost_c1 <- (spin[(a - 1), , tr] + spin[ab_p1[a], , tr])
+    cost_c2 <- (spin[(b - 1), , tr] + spin[ab_p1[b], , tr])
+    cost_c <- 2*sum((-lpj + lqj)*(cost_c1 - cost_c2))/ max_distance
 
 
     #量子的コスト
