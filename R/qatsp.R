@@ -6,7 +6,7 @@ qatsp <- function(x = NULL, y = NULL,
                   beta  = 37,
                   trotter = 10,
                   ann_para = 1,
-                  ann_step = 33,
+                  ann_step = 10,
                   mc_step = 6660,
                   reduc = 0.99){
 
@@ -18,12 +18,10 @@ qatsp <- function(x = NULL, y = NULL,
 
   #2都市間の距離をmatrixに変換
   city_distance <- matrix(rep(0, times = ncity * ncity), ncol = ncity)
-  for(i in 1:ncity){
+  for(i in 1:(ncity -1)){
     for(j in (i + 1):ncity){
-      if(!i + 1 > ncity){
-        city_distance[i, j] <- sqrt((x[i] - x[j])^2 + (y[i] - y[j])^2 )
-        city_distance[j, i] <- city_distance[i, j]
-      }
+      city_distance[i, j] <- sqrt((x[i] - x[j])^2 + (y[i] - y[j])^2 )
+      city_distance[j, i] <- city_distance[i, j]
     }
   }
 
@@ -83,13 +81,25 @@ qatsp <- function(x = NULL, y = NULL,
   spin_distance <- tr_all_distance(spin, city_distance)
 
 
-  #量子モンテカルロ
-  qmc <- function(spin, city_distance){
-    #初期値を定義
-    ncity <- length(spin[, 1, 1])
-    max_distance <- max(city_distance)
-    trotter <- length(spin[1, 1, ])
 
+  #trotterを1加えたときの値
+  #ただし、trotterを超えれば1に戻る
+  #tr_p1[1] で2を返す。
+  tr_p1 <- c(c(2: trotter), 1)
+
+  #trotterを1減じたときの値
+  #ただし、0になればtrotterになる。
+  tr_m1 <- c(trotter, c(1: (trotter - 1)))
+
+  #a,bに1を加えた時の値。
+  #ただし、ncityを超えれば1に戻る。
+  ab_p1 <- c(c(2: ncity), 1)
+
+  #余接関数
+  coth <- function(x){return(1/tanh(x))}
+
+  #量子モンテカルロ
+  qmc <- function(spin, city_distance, ncity, max_distance, trotter, cost_qr){
     #a,b,p,q,trを決める。
     ab <- sample(c(2:ncity), size = 2)
     a <- ab[1]
@@ -98,27 +108,23 @@ qatsp <- function(x = NULL, y = NULL,
     p <- which(spin[a, , tr] == 1)
     q <- which(spin[b, , tr] == 1)
 
-    cost_c <- 0
-
     #古典的コスト
+    cost_c <- 0
     for(j in 1:ncity){
-      lpj <- city_distance[p, j]/max_distance
-      lqj <- city_distance[q, j]/max_distance
-
-      cost_c1 <- 2 * (-lpj * spin[a, p, tr] - lqj * spin[a, q, tr])
-      cost_c2 <- (spin[(a - 1), j, tr] + spin[a%%ncity + 1, j, tr])
-      cost_c3 <- 2 * (-lpj * spin[b, p, tr] - lqj * spin[b, q, tr])
-      cost_c4 <- (spin[(b - 1), j, tr] + spin[b%%ncity + 1, j, tr])
-
-      cost_c <- cost_c + (cost_c1 * cost_c2 + cost_c3 * cost_c4)
+      lpj <- city_distance[p, j]
+      lqj <- city_distance[q, j]
+      cost_c1 <- (spin[(a - 1), j, tr] + spin[ab_p1[a], j, tr])
+      cost_c2 <- (spin[(b - 1), j, tr] + spin[ab_p1[b], j, tr])
+      cost_c <- cost_c + 2*(-lpj + lqj)*(cost_c1 - cost_c2)
     }
+    cost_c <- cost_c / max_distance
+
 
     #量子的コスト
-    cost_q1 <- spin[a, p, tr] * (spin[a, p, (tr - 2)%%trotter + 1] + spin[a, p, (tr)%%trotter + 1])
-    cost_q2 <- spin[a, q, tr] * (spin[a, q, (tr - 2)%%trotter + 1] + spin[a, q, (tr)%%trotter + 1])
-    cost_q3 <- spin[b, p, tr] * (spin[b, p, (tr - 2)%%trotter + 1] + spin[b, p, (tr)%%trotter + 1])
-    cost_q4 <- spin[b, q, tr] * (spin[b, q, (tr - 2)%%trotter + 1] + spin[b, q, (tr)%%trotter + 1])
-    cost_qr <- (1/beta) * log(cosh(beta * ann_para/trotter) / sinh(beta * ann_para / trotter))
+    cost_q1 <- spin[a, p, tr] * (spin[a, p, tr_m1[tr]] + spin[a, p, tr_p1[tr]])
+    cost_q2 <- spin[a, q, tr] * (spin[a, q, tr_m1[tr]] + spin[a, q, tr_p1[tr]])
+    cost_q3 <- spin[b, p, tr] * (spin[b, p, tr_m1[tr]] + spin[b, p, tr_p1[tr]])
+    cost_q4 <- spin[b, q, tr] * (spin[b, q, tr_m1[tr]] + spin[b, q, tr_p1[tr]])
     cost_q <- cost_qr * (cost_q1 + cost_q2 + cost_q3 + cost_q4)
 
     #合計のコスト
@@ -126,10 +132,7 @@ qatsp <- function(x = NULL, y = NULL,
 
     #flip
     if(cost <= 0 || runif(1) < exp(-beta * cost)){
-      spin[a, p, tr] <- (spin[a, p, tr] * (-1))
-      spin[a, q, tr] <- (spin[a, q, tr] * (-1))
-      spin[b, p, tr] <- (spin[b, p, tr] * (-1))
-      spin[b, q, tr] <- (spin[b, q, tr] * (-1))
+      spin[c(a, b), c(p, q), tr] <- spin[c(a, b), c(p, q), tr] * (-1)
     }
 
     #戻り値
@@ -139,17 +142,19 @@ qatsp <- function(x = NULL, y = NULL,
 
   #量子アニーリング(本体)
   distance_tsp <- NULL
-
   best_distance <- Inf
   best_tsp <- NULL
   best_spin <- NULL
   best_astep <- NULL
-
   plot_matrix <- NULL
+  max_distance <- max(city_distance)
 
   for(astep in 1:ann_step){
+    #mstepによらず変わらない定数を計算しておく。
+    cost_qr <- (1/beta) * log(coth(beta * ann_para / trotter))
+
     for(mstep in 1:mc_step){
-      spin <- qmc(spin, city_distance)
+      spin <- qmc(spin, city_distance, ncity, max_distance, trotter, cost_qr)
     }
     ann_para <- ann_para * reduc
 
@@ -157,7 +162,6 @@ qatsp <- function(x = NULL, y = NULL,
     spin_distance <- tr_all_distance(spin, city_distance)
     min_spin_distance <- min(spin_distance)
     distance_tsp <- c(distance_tsp, min_spin_distance)
-
 
     #もし、最小値があった場合、spinを保存
     if(min_spin_distance < best_distance){
@@ -176,6 +180,7 @@ qatsp <- function(x = NULL, y = NULL,
       matplot(c(1:astep), plot_matrix, type = "l",
               xlab = "Annealing step", ylab = "Total distance")
     }
+
   }
 
   #戻り値
@@ -192,6 +197,9 @@ qatsp <- function(x = NULL, y = NULL,
   ret$para$ann_step <- ann_step
   ret$para$mc_step <- mc_step
   ret$para$reduc <- reduc
+
+  ret$position$x <- x
+  ret$position$y <- y
 
   ret$city_distance <- city_distance
 
@@ -214,9 +222,8 @@ plot.qatsp <- function(result){
           xlab = "Annealing step", ylab = "Total distance")
 }
 
-
+#結果一覧表示
 summary.qatsp <- function(result){
-
 
 
 }
@@ -231,8 +238,20 @@ data <- read.table("dj38.tsp",
                    skip = 10, sep = " ", header = FALSE)
 
 
-set.seed(108)
-test <- qatsp(x = data[,2], y= data[,3])
+#Rprof(tmp <- tempfile())
 
+set.seed(108)
+
+system.time(
+  test <- qatsp(x = data[,2], y= data[,3])
+)
+
+
+#%%で27.98sec
+#ベクトルから呼び出せば24.56
+
+
+#Rprof()
+#summaryRprof(tmp)
 
 
