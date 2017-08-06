@@ -27,8 +27,8 @@ For reproducibility of results, we set random seeds.
 Designate city coordinates for x and y to solve the traveling salesman problem.
 The length of x and y must be the same.
 
-  set.seed(108)
-  result <- qatsp(x = Djibouti[,1], y= Djibouti[,2])
+    set.seed(108)
+    result <- qatsp(x = Djibouti[,1], y= Djibouti[,2])
 
 
 ### References
