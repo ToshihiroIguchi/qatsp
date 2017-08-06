@@ -128,7 +128,7 @@ qatsp <- function(x = NULL, y = NULL,
 
     #flip
     if(cost <= 0 || runif(1) < exp(-beta * cost)){
-      spin[c(a, b), c(p, q), tr] <- spin[c(a, b), c(p, q), tr] * (-1)
+      spin[c(a, b), c(p, q), tr] <- spin[c(b, a), c(p, q), tr] #flip
     }
 
     #戻り値
