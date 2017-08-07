@@ -72,7 +72,7 @@ qatsp <- function(x = NULL, y = NULL,
 
   #全てのトロッタの距離計算
   tr_all_distance <- function(spin, city_distance){
-    L <- NULL
+    L <- numeric(trotter)
     for(tr in 1:trotter){
       L <- c(L, tr_distance(spin, city_distance, tr))
     }
@@ -154,7 +154,6 @@ qatsp <- function(x = NULL, y = NULL,
     }
     ann_para <- ann_para * reduc
 
-    #各アニールステップごとに距離計算
     spin_distance <- tr_all_distance(spin, city_distance)
     min_spin_distance <- min(spin_distance)
     distance_tsp <- c(distance_tsp, min_spin_distance)
@@ -224,30 +223,18 @@ summary.qatsp <- function(result){
 
 }
 
+#テスト
+#Rprof(filename = "Rprof.out", append = FALSE, interval = 0.02, memory.profiling = TRUE )
 
-
-
-
-#データを開く
-#http://www.math.uwaterloo.ca/tsp/world/countries.html
-data <- read.table("dj38.tsp",
-                   skip = 10, sep = " ", header = FALSE)
-
-
-#Rprof(tmp <- tempfile())
 
 set.seed(108)
 
 system.time(
-  test <- qatsp(x = data[,2], y= data[,3])
+  test <- qatsp(x = Djibouti[,1], y= Djibouti[,2])
 )
 
 
-#%%で27.98sec
-#ベクトルから呼び出せば24.56
-
-
-#Rprof()
-#summaryRprof(tmp)
+#Rprof( NULL )
+#summaryRprof( filename = "Rprof.out", memory = "both" )
 
 
