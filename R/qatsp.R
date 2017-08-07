@@ -72,7 +72,7 @@ qatsp <- function(x = NULL, y = NULL,
 
   #全てのトロッタの距離計算
   tr_all_distance <- function(spin, city_distance){
-    L <- numeric(trotter)
+    L <- NULL
     for(tr in 1:trotter){
       L <- c(L, tr_distance(spin, city_distance, tr))
     }
@@ -117,10 +117,10 @@ qatsp <- function(x = NULL, y = NULL,
 
 
     #量子的コスト
-    cost_q1 <- spin[a, p, tr] * (spin[a, p, tr_m1[tr]] + spin[a, p, tr_p1[tr]])
-    cost_q2 <- spin[a, q, tr] * (spin[a, q, tr_m1[tr]] + spin[a, q, tr_p1[tr]])
-    cost_q3 <- spin[b, p, tr] * (spin[b, p, tr_m1[tr]] + spin[b, p, tr_p1[tr]])
-    cost_q4 <- spin[b, q, tr] * (spin[b, q, tr_m1[tr]] + spin[b, q, tr_p1[tr]])
+    cost_q1 <- (spin[a, p, tr_m1[tr]] + spin[a, p, tr_p1[tr]])
+    cost_q2 <- -(spin[a, q, tr_m1[tr]] + spin[a, q, tr_p1[tr]])
+    cost_q3 <- -(spin[b, p, tr_m1[tr]] + spin[b, p, tr_p1[tr]])
+    cost_q4 <- (spin[b, q, tr_m1[tr]] + spin[b, q, tr_p1[tr]])
     cost_q <- cost_qr * (cost_q1 + cost_q2 + cost_q3 + cost_q4)
 
     #合計のコスト
@@ -175,7 +175,6 @@ qatsp <- function(x = NULL, y = NULL,
       matplot(c(1:astep), plot_matrix, type = "l",
               xlab = "Annealing step", ylab = "Total distance")
     }
-
   }
 
   #戻り値
@@ -216,6 +215,25 @@ plot.qatsp <- function(result){
   matplot(c(1:result$para$ann_step), plot_matrix, type = "l",
           xlab = "Annealing step", ylab = "Total distance")
 }
+
+#順番
+summary.qatsp <- function(result){
+  best_spin <- result$best$spin
+  ret <- NULL
+  ncity <- length(best_spin[, 1])
+  for(t in 1:ncity){
+    ret <- c(ret, which(best_spin[t, ] == 1))
+  }
+
+  cat("This is the shortest path obtained by this quantum annealing.\n")
+  cat(ret)
+  cat("\n\n")
+  cat("The length of this route is ")
+  cat(min(result$best$tsp))
+  cat("\n\n")
+}
+
+
 
 #結果一覧表示
 summary.qatsp <- function(result){
