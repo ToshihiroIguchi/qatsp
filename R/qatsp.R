@@ -6,7 +6,7 @@ qatsp <- function(x = NULL, y = NULL,
                   beta  = 37,
                   trotter = 10,
                   ann_para = 1,
-                  ann_step = 10,
+                  ann_step = 333,
                   mc_step = 6660,
                   reduc = 0.99){
 
@@ -81,7 +81,6 @@ qatsp <- function(x = NULL, y = NULL,
   spin_distance <- tr_all_distance(spin, city_distance)
 
 
-
   #trotterを1加えたときの値
   #ただし、trotterを超えれば1に戻る
   #tr_p1[1] で2を返す。
@@ -115,7 +114,6 @@ qatsp <- function(x = NULL, y = NULL,
     cost_c2 <- (spin[(b - 1), , tr] + spin[ab_p1[b], , tr])
     cost_c <- 2*sum((-lpj + lqj)*(cost_c1 - cost_c2))/ max_distance
 
-
     #量子的コスト
     cost_q1 <- (spin[a, p, tr_m1[tr]] + spin[a, p, tr_p1[tr]])
     cost_q2 <- -(spin[a, q, tr_m1[tr]] + spin[a, q, tr_p1[tr]])
@@ -134,7 +132,6 @@ qatsp <- function(x = NULL, y = NULL,
     #戻り値
     return(spin)
   }
-
 
   #量子アニーリング(本体)
   distance_tsp <- NULL
@@ -210,21 +207,37 @@ plot.qatsp <- function(result){
       min_distance_tsp[a] <- min_distance_tsp[a - 1]
     }
   }
-
   plot_matrix <- matrix(c(result$distance, min_distance_tsp),result$para$ann_step, 2)
   matplot(c(1:result$para$ann_step), plot_matrix, type = "l",
           xlab = "Annealing step", ylab = "Total distance")
 }
 
-#順番
-summary.qatsp <- function(result){
+#経路を表示
+route <- function(result, graph = TRUE){
   best_spin <- result$best$spin
   ret <- NULL
   ncity <- length(best_spin[, 1])
   for(t in 1:ncity){
     ret <- c(ret, which(best_spin[t, ] == 1))
   }
+  #graph = TRUEで経路をグラフ表示。FALSEで経路の番号を返す。
+  if(graph){
+    x <- result$position$x
+    y <- result$position$y
+    xplot <- x[c(ret, ret[1])]
+    yplot <- y[c(ret, ret[1])]
+    plot(xplot, yplot, type = "o", asp = 1, xlab = "x", ylab = "y")
+  }else{
+    return(ret)
+  }
+}
 
+route(test)
+
+
+#結果一覧表示
+summary.qatsp <- function(result){
+  ret <- route(result, graph = FALSE)
   cat("This is the shortest path obtained by this quantum annealing.\n")
   cat(ret)
   cat("\n\n")
@@ -234,25 +247,5 @@ summary.qatsp <- function(result){
 }
 
 
-
-#結果一覧表示
-summary.qatsp <- function(result){
-
-
-}
-
-#テスト
-#Rprof(filename = "Rprof.out", append = FALSE, interval = 0.02, memory.profiling = TRUE )
-
-
-set.seed(108)
-
-system.time(
-  test <- qatsp(x = Djibouti[,1], y= Djibouti[,2])
-)
-
-
-#Rprof( NULL )
-#summaryRprof( filename = "Rprof.out", memory = "both" )
 
 
