@@ -30,14 +30,14 @@ The length of x and y must be the same.
     set.seed(108)
     result <- qatsp(x = Djibouti[,1], y= Djibouti[,2])
 
-By default, trace = TRUE, and the transition of the shortest distance during calculation is displayed on the graph.
-Optionally, by setting route = TRUE, the shortest route is displayed every time the shortest route is updated during calculation.
+By default, `trace = TRUE`, and the transition of the shortest distance during calculation is displayed on the graph.
+Optionally, by setting `route = TRUE`, the shortest route is displayed every time the shortest route is updated during calculation.
 
-The shortest path obtained by the route function is displayed.
+The shortest path obtained by the `route` function is displayed.
 
     route(result)
 
-The transition of the shortest distance is displayed by the plot function.
+The transition of the shortest distance is displayed by the `plot` function.
 
     plot(result)
 
