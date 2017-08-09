@@ -2,13 +2,15 @@
 #http://qiita.com/ab_t/items/8d52096ad0f578aa2224
 
 qatsp <- function(x = NULL, y = NULL,
-                  trace = TRUE,
                   beta  = 37,
                   trotter = 10,
                   ann_para = 1,
                   ann_step = 333,
                   mc_step = 6660,
-                  reduc = 0.99){
+                  reduc = 0.99,
+                  trace = TRUE,
+                  route = FALSE
+                  ){
 
   #初期チェック
   if(is.null(x) || is.null(y)){stop("Please enter the position in x and y.")}
@@ -161,16 +163,29 @@ qatsp <- function(x = NULL, y = NULL,
       best_tr <- which(spin_distance == min_spin_distance)
       best_spin <- spin[, , best_tr]
       best_astep <- astep
+      route_flg <- TRUE
     }
 
     #現時点での最良値
     best_tsp <- c(best_tsp, best_distance)
 
+    #最良値の経路表示
+    if(route && route_flg){
+      route_res <- list()
+      route_res$best$spin <- best_spin
+      route_res$best$tsp <- best_tsp
+      route_res$position$x <- x
+      route_res$position$y <- y
+      route(route_res)
+      route_flg <- FALSE
+    }
+
     #経過表示
-    if(trace){
+    if(trace && !route){
       plot_matrix <- rbind(plot_matrix, matrix(c(min_spin_distance, best_distance), 1 , 2))
       matplot(c(1:astep), plot_matrix, type = "l",
               xlab = "Annealing step", ylab = "Total distance")
+      legend("bottomleft", legend = round(best_distance, 0), bty  = "n")
     }
   }
 
@@ -227,13 +242,11 @@ route <- function(result, graph = TRUE){
     xplot <- x[c(ret, ret[1])]
     yplot <- y[c(ret, ret[1])]
     plot(xplot, yplot, type = "o", asp = 1, xlab = "x", ylab = "y")
+    legend("topright", legend = round(min(result$best$tsp), 0) , bty = "n")
   }else{
     return(ret)
   }
 }
-
-route(test)
-
 
 #結果一覧表示
 summary.qatsp <- function(result){
