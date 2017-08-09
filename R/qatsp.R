@@ -11,6 +11,11 @@ qatsp <- function(x = NULL, y = NULL,
                   trace = TRUE,
                   route = FALSE
                   ){
+  #起動時間記録
+  t0 <- proc.time()
+
+  #アニーリングパラメータを記録
+  ann_para0 <- ann_para
 
   #初期チェック
   if(is.null(x) || is.null(y)){stop("Please enter the position in x and y.")}
@@ -185,7 +190,7 @@ qatsp <- function(x = NULL, y = NULL,
       plot_matrix <- rbind(plot_matrix, matrix(c(min_spin_distance, best_distance), 1 , 2))
       matplot(c(1:astep), plot_matrix, type = "l",
               xlab = "Annealing step", ylab = "Total distance")
-      legend("bottomleft", legend = round(best_distance, 0), bty  = "n")
+      legend("bottomleft", legend = round(best_distance, 2), bty  = "n")
     }
   }
 
@@ -199,10 +204,11 @@ qatsp <- function(x = NULL, y = NULL,
 
   ret$para$beta <- beta
   ret$para$trotter <- trotter
-  ret$para$ann_para <- ann_para
+  ret$para$ann_para <- ann_para0
   ret$para$ann_step <- ann_step
   ret$para$mc_step <- mc_step
   ret$para$reduc <- reduc
+  ret$para$time <- (proc.time() - t0)[3]
 
   ret$position$x <- x
   ret$position$y <- y
@@ -242,7 +248,7 @@ route <- function(result, graph = TRUE){
     xplot <- x[c(ret, ret[1])]
     yplot <- y[c(ret, ret[1])]
     plot(xplot, yplot, type = "o", asp = 1, xlab = "x", ylab = "y")
-    legend("topright", legend = round(min(result$best$tsp), 0) , bty = "n")
+    legend("topright", legend = round(min(result$best$tsp), 2) , bty = "n")
   }else{
     return(ret)
   }
@@ -251,12 +257,33 @@ route <- function(result, graph = TRUE){
 #結果一覧表示
 summary.qatsp <- function(result){
   ret <- route(result, graph = FALSE)
+  cat("Quantum annealing for traveling salesman problem.\n\n")
   cat("This is the shortest path obtained by this quantum annealing.\n")
   cat(ret)
   cat("\n\n")
+
   cat("The length of this route is ")
   cat(min(result$best$tsp))
-  cat("\n\n")
+  cat("\n(The annealing step where the optimum result was obtained is ")
+  cat(result$best$astep)
+  cat(")\n\n")
+
+  cat("Inverse Temperature : ")
+  cat(result$para$beta)
+  cat("\nTrotter Dimension : ")
+  cat(result$para$trotter)
+  cat("\nInitial annealing parameter : ")
+  cat(result$para$ann_para)
+  cat("\nAnnealing step : ")
+  cat(result$para$ann_step)
+  cat("\nMonte Carlo step : ")
+  cat(result$para$mc_step)
+  cat("\nAn attenuation factor of the annealing parameter : ")
+  cat(result$para$reduc)
+
+  cat("\n\nCalculation time : ")
+  cat(result$para$time)
+  cat(" sec.")
 }
 
 
