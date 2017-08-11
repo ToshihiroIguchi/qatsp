@@ -2,11 +2,11 @@
 #http://qiita.com/ab_t/items/8d52096ad0f578aa2224
 
 qatsp <- function(x = NULL, y = NULL,
-                  beta  = 37,
+                  beta  = 50,
                   trotter = 10,
                   ann_para = 1,
-                  ann_step = 333,
-                  mc_step = 6660,
+                  ann_step = 500,
+                  mc_step = 5000,
                   reduc = 0.99,
                   trace = TRUE,
                   route = FALSE
@@ -235,7 +235,7 @@ plot.qatsp <- function(result){
 
 #経路を表示
 route <- function(result, graph = TRUE){
-  best_spin <- result$best$spin
+  best_spin <- as.matrix(result$best$spin)
   ret <- NULL
   ncity <- length(best_spin[, 1])
   for(t in 1:ncity){

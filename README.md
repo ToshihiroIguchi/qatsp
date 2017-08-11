@@ -2,33 +2,47 @@
 Quantum annealing for traveling salesman problem.
 
 ### Description
-Using quantum annealing by the quantum Monte Carlo method, python code that solves for TSP (Traveling Salesman problem) which is a typical combination optimization problem was released by ab_t belonging to Nextremer.
-We wanted to operate in R language.
-Therefore, we created a package of quantum annealing that operates at R.
+The Traveling Salesman Problem (TSP) is a combination of a set of cities and a distance between each two cities to find the one with the smallest total distance traveled by a tour traveling around all cities just once and returning to the departure place It is an optimization problem.
+This problem belongs to the class of NP difficulties in computational complexity theory.
+
+Quantum annealing is a metaheuristic for finding the global minimum of a given objective function over a given set of candidate solutions, by a process using quantum fluctuations.
+
+The qatsp package simulates quantum annealing in the R language and can approximate the traveling salesman problem.
+Quantum Monte Carlo method is used for simulation of quantum annealing.
+
+I refer to "[Combinatorial optimization with quantum annealing](http://qiita.com/ab_t/items/8d52096ad0f578aa2224)" implemented with python.
+
 
 ### Installation
 You can install from R console.
 
-If devtools is not installed on your PC, install devtools with Internet connection.
+If `devtools` is not installed on your PC, install `devtools` with Internet connection.
 
     install.packages("devtools")
 
-Install from GitHub using devtools.
+Install from GitHub using `devtools`.
     
     library(devtools)
     install_github("ToshihiroIguchi/qatsp")
 
-Load the qatsp package and attach it.
+Load the `qatsp` package and attach it.
 
     library(qatsp)
 
+Installation may fail if running under proxy environment.
+In that case, you may be able to install using the `httr` package.
+
 ### Examples
 For reproducibility of results, we set random seeds.
-Designate city coordinates for x and y to solve the traveling salesman problem.
-The length of x and y must be the same.
 
     set.seed(108)
-    result <- qatsp(x = Djibouti[,1], y= Djibouti[,2])
+    
+Designate city coordinates for x and y to solve the traveling salesman problem.
+The length of x and y must be the same.
+We will explain by way of example about patrolling municipalities in Akita prefecture.
+Latitude is stored in `Akita [, 1]` of `Akita` variable, and longitude is stored in `Akita [, 2]`.
+
+    result <- qatsp(x = Akita[,1], y= Akita[,2])
 
 By default, `trace = TRUE`, and the transition of the shortest distance during calculation is displayed on the graph.
 Optionally, by setting `route = TRUE`, the shortest route is displayed every time the shortest route is updated during calculation.
@@ -37,15 +51,21 @@ The shortest path obtained by the `route` function is displayed.
 
     route(result)
 
+![Route](route.png)
+
 The transition of the shortest distance is displayed by the `plot` function.
 
     plot(result)
 
+![Annealing step vs total distance](ann_distance.png)
+
 
 ### References
-http://qiita.com/ab_t/items/8d52096ad0f578aa2224
 
-http://www.math.uwaterloo.ca/tsp/world/countries.html
+[Combinatorial optimization with quantum annealing](http://qiita.com/ab_t/items/8d52096ad0f578aa2224)
+
+[Akita Prefecture - Geographical Survey Institute](http://www.gsi.go.jp/KOKUJYOHO/CENTER/kendata/akita_heso.htm)
+
 
 ### License 
 
