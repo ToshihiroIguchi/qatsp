@@ -1,10 +1,10 @@
-Package: qatsp
+Package: calcor
 Type: Package
-Title: Quantum annealing for traveling salesman problem
+Title: Calculate correlation
 Version: 0.1.0
 Author: Toshihiro Iguchi
-Maintainer: Toshihiro Iguchi
-Description: The qatsp package simulates quantum annealing in the R language and can approximate the traveling salesman problem. Quantum Monte Carlo method is used for simulation of quantum annealing.
+Description: Automatic judgment of ordinal scale and nominal scale and calculation of p-value from association.
 License: MIT
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1

@@ -35,7 +35,7 @@ In that case, you may be able to install using the `httr` package.
 ### Examples
 For reproducibility of results, we set random seeds.
 
-    set.seed(108)
+    set.seed(123)
     
 Designate city coordinates for x and y to solve the traveling salesman problem.
 The length of x and y must be the same.
