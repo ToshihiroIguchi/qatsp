@@ -49,18 +49,26 @@ The latitude is stored in `Akita [, 1]`. Longitude is stored in `Akita [, 2]`.
 
 By default, `trace = TRUE`, and the transition of the shortest distance during calculation is displayed on the graph.
 Optionally, by setting `route = TRUE`, the shortest route is displayed every time the shortest route is updated during calculation.
+Other parameters of the qatsp function are 
+`beta = 50`, `trotter = 10`, `ann_para = 1`, `ann_step = 500`, `mc_step = 5000`, and `reduc = 0.99` by default.
 
-The shortest path obtained by the `route` function is displayed.
+`summary` function can display summary.
 
-    route(result)
+    summary(result)
 
-![Route](route.png)
+The shortest path, the shortest distance, the parameters used for calculation, and the calculation time are displayed.
 
 The transition of the shortest distance is displayed by the `plot` function.
 
     plot(result)
 
 ![Annealing step vs total distance](ann_distance.png)
+
+The shortest path obtained by the `route` function is displayed.
+
+    route(result)
+
+![Route](route.png)
 
 
 ### References
