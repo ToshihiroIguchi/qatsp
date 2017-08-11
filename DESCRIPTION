@@ -1,9 +1,9 @@
-Package: calcor
+Package: qatsp
 Type: Package
-Title: Calculate correlation
+Title: Quantum annealing for traveling salesman problem
 Version: 0.1.0
 Author: Toshihiro Iguchi
-Description: Automatic judgment of ordinal scale and nominal scale and calculation of p-value from association.
+Description: The qatsp package simulates quantum annealing in the R language and can approximate the traveling salesman problem.
 License: MIT
 Encoding: UTF-8
 LazyData: true
