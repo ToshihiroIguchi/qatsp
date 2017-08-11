@@ -39,8 +39,11 @@ For reproducibility of results, we set random seeds.
     
 Designate city coordinates for x and y to solve the traveling salesman problem.
 The length of x and y must be the same.
+
 We will explain by way of example about patrolling municipalities in Akita prefecture.
-Latitude is stored in `Akita [, 1]` of `Akita` variable, and longitude is stored in `Akita [, 2]`.
+There are 25 points in this latitude and longitude data.
+It seems that [it takes 359 days if supercomputer K calculates the shortest route with brute force.](http://itpro.nikkeibp.co.jp/article/COLUMN/20140514/556564/)
+The latitude is stored in `Akita [, 1]`. Longitude is stored in `Akita [, 2]`.
 
     result <- qatsp(x = Akita[,1], y= Akita[,2])
 
@@ -66,6 +69,7 @@ The transition of the shortest distance is displayed by the `plot` function.
 
 [Akita Prefecture - Geographical Survey Institute](http://www.gsi.go.jp/KOKUJYOHO/CENTER/kendata/akita_heso.htm)
 
+[Astonishing quantum computers - suddenly commercialized dream machines](http://itpro.nikkeibp.co.jp/article/COLUMN/20140514/556564/)
 
 ### License 
 
