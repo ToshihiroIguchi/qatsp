@@ -40,11 +40,11 @@ For reproducibility of results, we set random seeds.
 Designate city coordinates for x and y to solve the traveling salesman problem.
 The length of x and y must be the same.
 We will explain by way of example about patrolling municipalities in Akita prefecture.
-There are 25 points in this latitude and longitude data.
-It seems that [it takes 359 days if supercomputer K calculates the shortest route with brute force.](http://itpro.nikkeibp.co.jp/article/COLUMN/20140514/556564/)
 
 ![Akita prefecture](Akita_city.png)
 
+There are 25 points in this latitude and longitude data.
+It seems that [it takes 359 days if supercomputer K calculates the shortest route with brute force.](http://itpro.nikkeibp.co.jp/article/COLUMN/20140514/556564/)
 The latitude is stored in `Akita [, 1]`. Longitude is stored in `Akita [, 2]`.
 Perform quantum annealing with `qatsp` function.
 
