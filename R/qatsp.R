@@ -1,4 +1,6 @@
-#量子アニーリングの練習
+#量子アニーリング
+
+#以下のサイトを参考。
 #http://qiita.com/ab_t/items/8d52096ad0f578aa2224
 
 qatsp <- function(x = NULL, y = NULL,
