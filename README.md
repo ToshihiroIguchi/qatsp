@@ -32,7 +32,7 @@ Load the `qatsp` package and attach it.
 Installation may fail if running under proxy environment.
 In that case, you may be able to install using the `httr` package.
 
-If you do not install the qatsp package, you can perform quantum annealing even if you copy the [code](https://raw.githubusercontent.com/ToshihiroIguchi/qatsp/master/R/qatsp.R) and [data](https://raw.githubusercontent.com/ToshihiroIguchi/qatsp/master/R/Akita_tspdata.R) and paste it into the R console.
+If you do not install the `qatsp` package, you can perform quantum annealing even if you copy the [code](https://raw.githubusercontent.com/ToshihiroIguchi/qatsp/master/R/qatsp.R) and [data](https://raw.githubusercontent.com/ToshihiroIguchi/qatsp/master/R/Akita_tspdata.R) and paste it into the R console.
 
 ### Examples
 For reproducibility of results, we set random seeds.
