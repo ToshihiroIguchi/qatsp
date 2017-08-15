@@ -1,5 +1,5 @@
 ## qatsp packages
-Quantum annealing for traveling salesman problem.
+Quantum annealing for traveling salesman problem executed in R language.
 
 ### Description
 The Traveling Salesman Problem (TSP) is a combination of a set of cities and a distance between each two cities to find the one with the smallest total distance traveled by a tour traveling around all cities just once and returning to the departure place It is an optimization problem.
@@ -32,6 +32,8 @@ Load the `qatsp` package and attach it.
 Installation may fail if running under proxy environment.
 In that case, you may be able to install using the `httr` package.
 
+If you do not install the qatsp package, you can perform quantum annealing even if you copy the [code](https://raw.githubusercontent.com/ToshihiroIguchi/qatsp/master/R/qatsp.R) and [data](https://raw.githubusercontent.com/ToshihiroIguchi/qatsp/master/R/Akita_tspdata.R) and paste it into the R console.
+
 ### Examples
 For reproducibility of results, we set random seeds.
 
@@ -39,7 +41,7 @@ For reproducibility of results, we set random seeds.
     
 Designate city coordinates for x and y to solve the traveling salesman problem.
 The length of x and y must be the same.
-We will explain by way of example about patrolling municipalities in Akita prefecture.
+We will explain by way of example about traveling municipalities in Akita prefecture of Japan.
 
 ![Akita prefecture](Akita_city.png)
 
