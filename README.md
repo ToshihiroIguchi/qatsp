@@ -1,5 +1,6 @@
 ## qatsp packages
 Quantum annealing for traveling salesman problem executed in R language.
+[You can also operate it on the browser.](https://github.com/ToshihiroIguchi/qatsp/tree/master/shiny)
 
 ### Description
 The Traveling Salesman Problem (TSP) is a combination of a set of cities and a distance between each two cities to find the one with the smallest total distance traveled by a tour traveling around all cities just once and returning to the departure place It is an optimization problem.

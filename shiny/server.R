@@ -20,6 +20,7 @@ server <- function(input, output, session) {
     })
 
 
+
     #Inverse Temperature : 50
     #beta  = 50,
     output$beta <- renderUI({
