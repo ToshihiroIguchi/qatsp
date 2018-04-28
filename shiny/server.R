@@ -66,7 +66,13 @@ server <- function(input, output, session) {
     csv_x <- reactive({csv_file()[input$x]})
     csv_y <- reactive({csv_file()[input$y]})
 
-    result <- reactive({qatsp(x = csv_x()[, 1], y = csv_y()[, 1])})
+    result <- reactive({qatsp(x = csv_x()[, 1], y = csv_y()[, 1],
+                              beta  = input$beta,
+                              trotter = input$trotter,
+                              ann_para = input$ann_para,
+                              ann_step = input$ann_step,
+                              mc_step = input$mc_step,
+                              reduc = input$reduc)})
 
     output$route <- renderPlot({route(result())})
 
