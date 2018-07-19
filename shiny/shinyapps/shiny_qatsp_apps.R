@@ -1,10 +1,10 @@
-#qatspをshinyで動かすための各種関数
+#Various functions for moving qatsp with shiny
 
-#ベクトルに変換
+#Convert to vector
 as.vec <- function(x){return(as.vector(as.matrix(x)))}
 
 
-#コンマが入ったベクトルを数値に変換
+#Convert vector containing comma to numeric value
 as.num <- function(x){
   x <- as.vec(x)
   x <- as.numeric(gsub(",", "", x))
@@ -12,7 +12,7 @@ as.num <- function(x){
 }
 
 
-#数値の項目名を取得
+#Get item name of numeric value
 get.numeric.name <- function(df){
   df.name <- colnames(df)
   n <- length(df[1, ])

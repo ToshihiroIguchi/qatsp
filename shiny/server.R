@@ -1,7 +1,7 @@
-#CUI版のqatsp読み込み
+#Reading the CUI version of qatsp
 source(file.path("../R","qatsp.R"))
 
-#shiny用の関数準備
+#Function preparation for shiny
 source("shiny_qatsp.R")
 
 

@@ -1,4 +1,4 @@
-#各種コード読み込み
+#Reading various codes
 source("Akita_tspdata.R")
 source("qatsp_apps.R")
 source("shiny_qatsp_apps.R")

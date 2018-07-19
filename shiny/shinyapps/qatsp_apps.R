@@ -1,6 +1,6 @@
-#量子アニーリング
+#Quantum Annealing
 
-#以下のサイトを参考。
+#Please refer to the following site
 #http://qiita.com/ab_t/items/8d52096ad0f578aa2224
 
 
@@ -14,19 +14,19 @@ qatsp <- function(x = NULL, y = NULL,
                   trace = TRUE,
                   route = FALSE
                   ){
-  #起動時間記録
+  #Startup time record
   t0 <- proc.time()
 
-  #アニーリングパラメータを記録
+  #Record annealing parameters
   ann_para0 <- ann_para
 
-  #初期チェック
+  #Initial check
   if(is.null(x) || is.null(y)){stop("Please enter the position in x and y.")}
   if(!length(x) == length(y)){stop("Make the vector length of x and y the same.")}
   ncity <- length(x)
 
 
-  #2都市間の距離をmatrixに変換
+  #Convert cities to matrix
   city_distance <- matrix(rep(0, times = ncity * ncity), ncol = ncity)
   for(i in 1:(ncity -1)){
     for(j in (i + 1):ncity){
@@ -36,39 +36,38 @@ qatsp <- function(x = NULL, y = NULL,
   }
 
 
-  #spinの初期値を作成する。
-  #次元はncity * ncity * torotter
-  #spinそのものでなく、まず関数を作成。
+  #Create an initial value of spin
+  #Dimensions are ncity * ncity * torotter
+  #First, create a function instead of spin itself
   make_spin <- function(ncity, trotter){
-    #まず、ncity x ncityのspinの行列を作る。
+    #First, create a spin matrix of ncity x ncity
     spin0 <- diag(1, ncol = ncity, nrow = ncity)
     spin0 <- 2*spin0 - 1
 
-    #行でシャッフル
+    #Shuffle in line
     mat_shaffle <- function(spin0){
       num_shaffle <- c(1, sample(c(2: length(spin0[,1]))))
       ret <- spin0[num_shaffle, ]
       return(ret)
     }
 
-    #spin用に空のテンソル
-    #ncity, ncity, trotter_dimの次元
+    #Dimensions of empty tensors ncity, ncity, trotter_dim for spin
     spin <- array(
       c(0, times = ncity*ncity*trotter),
       dim = c(ncity, ncity, trotter)
     )
 
-    #ランダムにシャッフルしたスピンを各トロッタに入れる
+    #Put randomly shuffled spins in each torota
     for(tr in 1:trotter){
       spin[,,tr] <- mat_shaffle(spin0)
     }
     return(spin)
   }
 
-  #spinの初期値を作成
+  #Create spin initial value
   spin <- make_spin(ncity, trotter)
 
-  #指定したトロッタの距離計算
+  #Calculate the distance of the specified torota
   tr_distance <- function(spin, city_distance ,tr){
     L <- 0
     spin_tr <- spin[, , tr]
@@ -80,7 +79,7 @@ qatsp <- function(x = NULL, y = NULL,
     return(L)
   }
 
-  #全てのトロッタの距離計算
+  #Calculate the distance of all Trotters
   tr_all_distance <- function(spin, city_distance){
     L <- NULL
     for(tr in 1:trotter){

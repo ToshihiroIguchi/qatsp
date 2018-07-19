@@ -1,4 +1,4 @@
-#秋田県の自治体の緯度と経度
+#Latitude and longitude of municipalities in Akita prefecture
 #http://www.gsi.go.jp/KOKUJYOHO/CENTER/kendata/akita_heso.htm
 Akita <- data.frame(
   latitude = c(140.1036, 140.0272, 140.5667, 140.5647, 139.8478, 140.4958, 140.7883,
